@@ -15,31 +15,28 @@ ocorrencias = manager.dict()#Array(c_char_p, 80)
 numPalavras = manager.Value('i', 0)
 
 with open('quantum-Comput-titles.text','r') as f: 
-#    for line in islice(f, 1000):
-    for line in f: 
+    for line in islice(f, 100):
+#    for line in f: 
         linhas.append(line) 
 
  
 
 def montandoDicionario(line,dicionario,numPalavras, lock):
-    my_replacement_dict = {"[": " ", "+":" ", "using": " ", "with": " ", "based": " ", "from": " ", "between":" "} 
-#    print(dicionairio[:])
     for lines in line:
         for word in lines.split():
             if (len(word) > 3):
-                for key, value in my_replacement_dict.items():
-#                    print(".",key,".",word, ".") 
-                    if (key == word.lower()):
-#                        print("IGUAL!!!!!!!!!")
-                        word = word.lower()
-                        word = word.replace(key,value) 
-#                        print("REMOVEU ?", word,".")
+                with open('Dic-delete-words.text','r') as f: 
+                    for lineRem in f: 
+                        for key in lineRem.split():
+                            if (key == word.lower() or key in word.lower()):
+                                word = word.lower()
+                                word = word.replace(key," ")
                 with lock:
                     Tem = 0
                     for k in dicionario.items():
-                        if   (word.lower() in str(k[1])):
+                        if (word.lower() in str(k[1])):
                             Tem = 1
-                    if (word == " "):
+                    if (" " in word):
                         Tem = 1
                         
                     if (not Tem):
@@ -54,16 +51,32 @@ def procurandoOcorrencias(dicionario, ocorrencias,lock):
         with open('quantum-Comput-titles.text','r') as f:
 #            for line in islice(f, 200):
             for line in f:
-                for word in line.split():
-                    if (len(word) > 3):
-                        if ( wordDic == word.lower()):
-                            pal_count += 1
+#                for word in line.split():
+#                    if (len(word) > 3):
+                if ( wordDic in line.lower()):
+                    pal_count += 1
         with lock:
             ocorrencias[index] = pal_count
                             
-  
+
+def montantoMatrixOcorrenciasCruzadas(palavrasTop):
+    cruzados = np.zeros((20,20))
+    for indexA, wordDicA  in enumerate(palavrasTop.Palavras):
+        for indexB, wordDicB in enumerate(palavrasTop.Palavras):
+            pal_count=0
+            with open('quantum-Comput-titles.text','r') as f:
+                for line in f:
+                    if ( wordDicA in line.lower() and wordDicB in line.lower()):
+                        pal_count += 1
+            cruzados[indexA][indexB]=pal_count
+
 if __name__ == '__main__': 
     jobs = [] 
+
+    with open('Dic-compound-words.text','r') as f: 
+        for line in f: 
+            dicionario[numPalavras.value] = (line.lower().rstrip())
+            numPalavras.value += 1
  
     numcpus = 20
 
@@ -82,10 +95,11 @@ if __name__ == '__main__':
             quebrados = int(np.size(linhas)%numcpus)
         p.start()
         p.join()
-#    print(dicionario)
 
     end = timeit.timeit()
     print(end-start)
+
+#    print(dicionario)
 
     start = timeit.timeit()
 
@@ -105,8 +119,7 @@ if __name__ == '__main__':
         p.join()
 
     end = timeit.timeit()
-    print(end-start)
-        
+    print(end-start)       
 
     df = pd.DataFrame([[row[1] for row in ocorrencias.items()], [row[1] for row in dicionario.items()[0:np.size(ocorrencias)]]])
     df = np.transpose(df)
@@ -119,57 +132,26 @@ if __name__ == '__main__':
     df = df.reset_index()   
 
     print(df[0:200])
-    df.to_csv('ranking.csv') 
+    df.to_csv('ranking-test.csv') 
 
-        
+    palavrasTop = df.head(20) 
 
-#    for 
-#    procs = [multiprocessing.Process(target=montandoDicionario, args=(linhas[i:i+5],numPalavras,lock))     
-#
+    cruzados = np.zeros((20,20)) 
+    for indexA, wordDicA  in enumerate(palavrasTop.Palavras): 
+        for indexB, wordDicB in enumerate(palavrasTop.Palavras): 
+            pal_count=0 
+            with open('quantum-Comput-titles.text','r') as f: 
+                for line in f: 
+                    if ( wordDicA in line.lower() and wordDicB in line.lower()): 
+                        pal_count += 1 
+            cruzados[indexA][indexB]=pal_count 
+  
+    DFcruzados = pd.DataFrame(cruzados)  
+    DFcruzados.columns=[i for i in palavrasTop.Palavras] 
+    DFcruzados["Palavras"] = [i for i in palavrasTop.Palavras] 
+    cols = DFcruzados.columns.tolist()
+    cols = cols[-1:] + cols[:-1]                                                                                                                                                                
+    DFcruzados = DFcruzados[cols] 
 
-
-
-#def montandoDicionarioAUX(num,numPalavras,df): 
-#    """thread worker function""" 
-#    print('Worker:', num) 
-#    return 
-
-
-#        jobs.append(p) 
-#        p.start()
-#        p.join()
-#        print(dicionario[:])
-#                
-#
-#
-
-#
-#
-#with open('quantum-Comput-titles.text','r') as f:
-#    for line in f:
-#        for word in line.split():
-#            if (len(word) > 3):
-#                if ( not np.size(df[df['Palavras'].str.contains(word)]) > 0 ):
-#                    df.loc[i] = [word.lower(),0]
-#                    i+=1
-#dicionario = df
-#
-#df = pd.DataFrame([["Quantum Information", 0]], columns=['Palavras','Ocorrence'])
-#prosseguindo=1
-#i=1
-#start = timeit.timeit()
-#for index, wordDic in dicionario.iterrows():
-#    pal_count=0
-#    with open('quantum-Comput-titles.text','r') as f:
-#        for line in f:
-#            for word in line.split():
-#                if (len(word) > 3):
-#                    if ( wordDic.Palavras == word.lower()):
-#                        pal_count += 1
-#                        dicionario.Ocorrence[index] = pal_count
-#                    
-#end = timeit.timeit()
-#print(end-start)
-#df = dicionario.sort_values(by='Ocorrence', ascending=False, na_position='first')
-#
-#df.to_csv('ranking.csv') 
+    print(DFcruzados)
+    DFcruzados.to_csv('matriz-test.csv') 
