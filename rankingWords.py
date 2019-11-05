@@ -6,10 +6,14 @@ import numpy as np
 df = pd.DataFrame([["Quantum Information", 0]], columns=['Palavras','Ocorrence'])
 i=1
 
+my_replacement_dict = {"[": "", "+":""} 
+
 with open('quantum-Comput-titles.text','r') as f:
     for line in f:
         for word in line.split():
             if (len(word) > 3):
+                for key, value in my_replacement_dict.items(): 
+                    word = word.replace(key,value) 
                 if ( not np.size(df[df['Palavras'].str.contains(word)]) > 0 ):
                     df.loc[i] = [word.lower(),0]
                     i+=1
