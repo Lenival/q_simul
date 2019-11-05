@@ -15,8 +15,8 @@ ocorrencias = manager.dict()#Array(c_char_p, 80)
 numPalavras = manager.Value('i', 0)
 
 with open('quantum-Comput-titles.text','r') as f: 
-    for line in islice(f, 100):
-#    for line in f: 
+#    for line in islice(f, 100):
+    for line in f: 
         linhas.append(line) 
 
  
