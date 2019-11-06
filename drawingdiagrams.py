@@ -25,7 +25,7 @@ fim=1
 for index, row in dfm.iterrows():
     for i in range(0,fim-1,1):
         print(row.Palavras," ",dfm['Palavras'].iloc[i]," ",dfm[row.Palavras].iloc[i])
-        if(dfm[row.Palavras].iloc[i] > 60):
+        if(dfm[row.Palavras].iloc[i] > 40):
             f.edge(str(row.Palavras), str(dfm['Palavras'].iloc[i]),str(dfm[row.Palavras].iloc[i]))
     fim+=1
     
