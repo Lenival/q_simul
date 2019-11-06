@@ -12,7 +12,6 @@ f = Digraph('finite_state_machine', filename='MapMinddiagram.gv', format='png')
 
 #f.attr(rankdir='LR', size='6,6')
 
-
 for index, row in df.head(20).iterrows():
 #    f.attr('node', shape='doublecircle',scale=str(row['Ocorrence']))
 #    f.attr(rankdir='LR', )
@@ -20,4 +19,18 @@ for index, row in df.head(20).iterrows():
     f.attr('node', width=str(int(row['Ocorrence']*20/3154)), height=str(int(row['Ocorrence']*20/3154)))
     f.node(row['Palavras'])
 
+
+dfm = pd.read_csv("matriz.csv")
+fim=1
+for index, row in dfm.iterrows():
+    for i in range(0,fim-1,1):
+        print(row.Palavras," ",dfm['Palavras'].iloc[i]," ",dfm[row.Palavras].iloc[i])
+        if(dfm[row.Palavras].iloc[i] > 60):
+            f.edge(str(row.Palavras), str(dfm['Palavras'].iloc[i]),str(dfm[row.Palavras].iloc[i]))
+    fim+=1
+    
+
+
+
+    
 f.view()
