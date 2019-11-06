@@ -132,7 +132,7 @@ if __name__ == '__main__':
     df = df.reset_index()   
 
     print(df[0:200])
-    df.to_csv('ranking-test.csv') 
+    df.to_csv('ranking.csv') 
 
     palavrasTop = df.head(20) 
 
@@ -154,4 +154,4 @@ if __name__ == '__main__':
     DFcruzados = DFcruzados[cols] 
 
     print(DFcruzados)
-    DFcruzados.to_csv('matriz-test.csv') 
+    DFcruzados.to_csv('matriz.csv') 
