@@ -1,6 +1,7 @@
 
 import pandas as pd
 from graphviz import Digraph
+import matplotlib.pyplot as plt
 
 df = pd.read_csv("ranking.csv")
 
@@ -34,3 +35,20 @@ for index, row in dfm.iterrows():
 
     
 f.view()
+
+
+def TopCitedPapers():
+
+    data = pd.read_csv('Top20papers.data')
+    dataT = data.T
+    
+    fig, ax = plt.subplots()
+    
+    for row in dataT[3:20]:
+        ax.plot(dataT[3:20].iloc[::-1].index, dataT[row][3:20].iloc[::-1], label=str(data['Unnamed: 0'][row]))
+        
+    legend = ax.legend(loc='upper left')# shadow=True, fontsize='x-large')
+    
+    # Put a nicer background color on the legend.
+    #legend.get_frame().set_facecolor('C0')
+    plt.show()
